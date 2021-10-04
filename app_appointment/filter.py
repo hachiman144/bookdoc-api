@@ -69,4 +69,4 @@ class AppointmentFilter(BaseFilterBackend):
             if query_params.get('name', '') != '':
                 queryset = queryset.filter(patient__first_name__contains=query_params.get('name'))
 
-        return queryset
+        return queryset.order_by('-date_from')
