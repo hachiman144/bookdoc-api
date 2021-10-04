@@ -131,6 +131,29 @@ class AppointmentUpdateSerializer(serializers.ModelSerializer):
         model = Appointment
         fields = '__all__'
 
+    def validate(self, attrs):
+        errors = dict()
+
+        if attrs.get('first_name') == "" or attrs.get('last_name') == "":
+            errors['generic'] = 'Name is Incomplete.'
+
+        if attrs.get('date_from') != "" and attrs.get('date_to') != "":
+            datetime_from = datetime.strptime(attrs.get('date_from'), '%B, %d %Y %I:%M%p')
+            datetime_to = datetime.strptime(attrs.get('date_to'), '%B, %d %Y %I:%M%p')
+
+            # See if patient already exists
+            appointment = Appointment.objects.filter(
+                date_from__gte=datetime_from,
+                date_to__lte=datetime_to,
+            ).first()
+
+            if appointment:
+                errors['generic'] = 'No Overbooking!'
+
+        if errors:
+            raise serializers.ValidationError(errors)
+        return attrs
+
     def save(self, **kwargs):
         data = save_validated_data(self.validated_data.items(), kwargs.items())
         appointment = self.instance

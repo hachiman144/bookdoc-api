@@ -55,7 +55,8 @@ class AppointmentFilter(BaseFilterBackend):
                 datetime_from = datetime.strptime(query_params.get('date_from'), '%B %d, %Y') \
                     if query_params.get('date_from', '') != '' else date.today()
                 datetime_to = datetime.strptime(query_params.get('date_to'), '%B %d, %Y') \
-                    if query_params.get('date_to', '') != '' else date.today()
+                    if query_params.get('date_to', '') != '' else \
+                    datetime.strptime(query_params.get('date_from'), '%B %d, %Y')
 
                 start = datetime.combine(datetime_from, time.min)
                 start = start.astimezone(pytz.utc)
